@@ -21,4 +21,15 @@ jobs:
           pip install -r requirements.txt
       - name: Run tests
         run: |
-          pytest app/ 
+          pytest app/
+      - name: Build Docker image
+        run: |
+          docker build -t zajaczek01/devops-aws-demo:latest -f docker/Dockerfile .
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push Docker image
+        run: |
+          docker push zajaczek01/devops-aws-demo:latest 
