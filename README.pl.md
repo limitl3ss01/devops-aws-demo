@@ -174,7 +174,7 @@ Poniżej kilka screenów z projektu i środowiska DevOps:
   ![EC2 Instances](diagrams/aws_instances.png)
 
 - **Security Group z otwartym portem 5000:**
-  ![Security Group](diagrams/aws_security_group.png)
+  ![Security Group](diagrams/aws_security_groups.png)
 
 - **Wynik polecenia `docker ps` na EC2:**
   ![Docker PS](diagrams/docker_ps.png)
@@ -189,7 +189,7 @@ Poniżej kilka screenów z projektu i środowiska DevOps:
   ![GitHub Actions](diagrams/github_actions.png)
 
 - **Obraz na Docker Hub:**
-  ![Docker Hub](diagrams/docker_hub.png)
+  ![Docker Hub](diagrams/docker_image.png)
 
 - **Diagram architektury (draw.io):**
   ![Diagram architektury](diagrams/architecture.png)
