@@ -176,21 +176,6 @@ Below are some screenshots from the project and DevOps environment:
 - **Security Group with open port 5000:**
   ![Security Group](diagrams/aws_security_groups.png)
 
-- **Result of `docker ps` on EC2:**
-  ![Docker PS](diagrams/docker_ps.png)
-
-- **Result of `curl http://localhost:5000/health` on EC2:**
-  ![Docker Curl](diagrams/docker_curl.png)
-
-- **App in the browser:**
-  ![App in browser](diagrams/status_ok.png)
-
-- **GitHub Actions workflow (green check):**
-  ![GitHub Actions](diagrams/github_actions.png)
-
-- **Docker Hub image:**
-  ![Docker Hub](diagrams/docker_image.png)
-
 - **Architecture diagram (draw.io):**
   ![Architecture Diagram](diagrams/architecture.png)
 
