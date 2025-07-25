@@ -169,3 +169,18 @@ Below are example screenshots from the project and DevOps environment:
 
 ## Author
 zajaczek01 
+
+## Quick deployment on EC2
+
+To update and run the latest version of the app on your EC2 server, use the provided script:
+
+```sh
+cd scripts
+chmod +x deploy.sh
+./deploy.sh
+```
+
+This script will:
+- Stop and remove the old container (if exists)
+- Pull the latest image from Docker Hub
+- Start a new container on port 5000 

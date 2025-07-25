@@ -169,5 +169,22 @@ Każde zadanie posiada następujące pola:
 
 ---
 
+## Szybki deployment na EC2
+
+Aby zaktualizować i uruchomić najnowszą wersję aplikacji na serwerze EC2, użyj dołączonego skryptu:
+
+```sh
+cd scripts
+chmod +x deploy.sh
+./deploy.sh
+```
+
+Skrypt automatycznie:
+- Zatrzymuje i usuwa stary kontener (jeśli istnieje)
+- Pobiera najnowszy obraz z Docker Hub
+- Uruchamia nowy kontener na porcie 5000
+
+---
+
 ## Autor
 zajaczek01 
