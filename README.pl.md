@@ -166,33 +166,33 @@ Skrypt automatycznie:
 
 ---
 
-## Screeny
+## Najważniejsze cechy
+- Dwa osobne środowiska: staging i production, każde z własną infrastrukturą i pipeline'm deploymentu
+- Automatyczny CI/CD przez GitHub Actions dla obu środowisk
+- Infrastructure as Code z Terraform, remote state w S3 + DynamoDB
+- Zero-touch deployment: każdy push do odpowiedniej gałęzi uruchamia pełny deploy w chmurze
+- Bezpieczne zarządzanie sekretami przez GitHub Secrets
+- Modularna, produkcyjna struktura gotowa do dalszej rozbudowy (monitoring, skalowanie itd.)
 
-Poniżej kilka screenów z projektu i środowiska DevOps:
+## Jak to działa
+1. **Push kodu** do `develop` lub `main` uruchamia odpowiedni workflow GitHub Actions.
+2. **Pipeline CI/CD** buduje i testuje aplikację, wrzuca obraz Dockera na Docker Hub.
+3. **Deployment** łączy się z odpowiednim EC2 i uruchamia skrypt deploymentu, aktualizując aplikację.
+4. **Terraform** zarządza całą infrastrukturą, a stan trzymany jest zdalnie (S3 + DynamoDB).
+5. **Środowiska** są w pełni rozdzielone – możesz testować na staging przed produkcją.
+
+---
+
+## Przykładowe screeny
+
+- **Diagram architektury:**
+  ![Diagram architektury](diagrams/architecture.png)
+
+- **Workflow GitHub Actions:**
+  ![GitHub Actions](diagrams/github_actions.png)
 
 - **Instancje EC2 w AWS:**
   ![EC2 Instances](diagrams/aws_instances.png)
-
-- **Security Group z otwartym portem 5000:**
-  ![Security Group](diagrams/aws_security_groups.png)
-
-- **Wynik polecenia `docker ps` na EC2:**
-  ![Docker PS](diagrams/docker_ps.png)
-
-- **Wynik polecenia `curl http://localhost:5000/health` na EC2:**
-  ![Docker Curl](diagrams/docker_curl.png)
-
-- **Widok aplikacji w przeglądarce:**
-  ![Aplikacja w przeglądarce](diagrams/status_ok.png)
-
-- **Workflow GitHub Actions (zielony check):**
-  ![GitHub Actions](diagrams/github_actions.png)
-
-- **Obraz na Docker Hub:**
-  ![Docker Hub](diagrams/docker_image.png)
-
-- **Diagram architektury (draw.io):**
-  ![Diagram architektury](diagrams/architecture.png)
 
 ---
 

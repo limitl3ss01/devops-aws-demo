@@ -166,33 +166,33 @@ This script will:
 
 ---
 
-## Screenshots
+## Key Features
+- Two separate environments: staging and production, each with its own infrastructure and deployment pipeline
+- Automated CI/CD with GitHub Actions for both environments
+- Infrastructure as Code with Terraform, remote state in S3 + DynamoDB
+- Zero-touch deployment: every push to the right branch triggers a full deploy to the cloud
+- Secure secrets management via GitHub Secrets
+- Modular, production-grade structure ready for further expansion (monitoring, scaling, etc.)
 
-Below are some screenshots from the project and DevOps environment:
+## How it works
+1. **Code push** to `develop` or `main` triggers the appropriate GitHub Actions workflow.
+2. **CI/CD pipeline** builds and tests the app, pushes the Docker image to Docker Hub.
+3. **Deployment step** connects to the right EC2 instance and runs the deployment script, updating the running app.
+4. **Terraform** manages all infrastructure, with state stored remotely for safety and collaboration.
+5. **Environments** are fully separated, so you can test in staging before going to production.
+
+---
+
+## Example Screenshots
+
+- **Architecture diagram:**
+  ![Architecture Diagram](diagrams/architecture.png)
+
+- **GitHub Actions workflow:**
+  ![GitHub Actions](diagrams/github_actions.png)
 
 - **EC2 Instances in AWS:**
   ![EC2 Instances](diagrams/aws_instances.png)
-
-- **Security Group with open port 5000:**
-  ![Security Group](diagrams/aws_security_groups.png)
-
-- **Result of `docker ps` on EC2:**
-  ![Docker PS](diagrams/docker_ps.png)
-
-- **Result of `curl http://localhost:5000/health` on EC2:**
-  ![Docker Curl](diagrams/docker_curl.png)
-
-- **App in the browser:**
-  ![App in browser](diagrams/status_ok.png)
-
-- **GitHub Actions workflow (green check):**
-  ![GitHub Actions](diagrams/github_actions.png)
-
-- **Docker Hub image:**
-  ![Docker Hub](diagrams/docker_image.png)
-
-- **Architecture diagram (draw.io):**
-  ![Architecture Diagram](diagrams/architecture.png)
 
 ---
 
