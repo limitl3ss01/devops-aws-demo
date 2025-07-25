@@ -185,6 +185,24 @@ This script will:
 
 ---
 
+## Automated cloud deployment (CI/CD to EC2)
+
+This project features a professional GitHub Actions workflow (`.github/workflows/deploy.yml`) for fully automated deployment to AWS EC2:
+
+- On every push to the `main` branch:
+  - Runs tests and builds the Docker image
+  - Publishes the image to Docker Hub
+  - Connects to your EC2 server via SSH and runs the deployment script (`scripts/deploy.sh`)
+
+**Benefits:**
+- No manual steps required to update your app in the cloud
+- Every code change is automatically tested, built, and deployed
+- Shows real DevOps skills: CI/CD, automation, cloud deployment
+
+You can monitor the deployment process in the **Actions** tab on GitHub.
+
+---
+
 ## Author
 zajaczek01 
 

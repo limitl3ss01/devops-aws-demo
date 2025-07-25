@@ -88,6 +88,24 @@ Aplikacja będzie dostępna pod adresem: `http://PUBLICZNY_ADRES_IP:5000/health`
 
 ---
 
+## Automatyczny deployment do chmury (CI/CD na EC2)
+
+Projekt zawiera profesjonalny workflow GitHub Actions (`.github/workflows/deploy.yml`) do w pełni automatycznego wdrożenia na AWS EC2:
+
+- Przy każdym pushu do gałęzi `main`:
+  - Uruchamiane są testy i budowany jest obraz Dockera
+  - Obraz jest publikowany do Docker Hub
+  - Następuje połączenie przez SSH z serwerem EC2 i uruchomienie skryptu deploymentu (`scripts/deploy.sh`)
+
+**Zalety:**
+- Zero ręcznych kroków przy aktualizacji aplikacji w chmurze
+- Każda zmiana w kodzie jest automatycznie testowana, budowana i wdrażana
+- Pokazuje prawdziwe umiejętności DevOps: CI/CD, automatyzacja, deployment do chmury
+
+Proces deploymentu możesz śledzić w zakładce **Actions** na GitHubie.
+
+---
+
 ## Dalsze kroki
 - [ ] Automatyzacja deploymentu na EC2 (user-data, Ansible)
 - [ ] Monitoring (Prometheus, Grafana, CloudWatch)
