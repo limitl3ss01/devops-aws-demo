@@ -199,12 +199,6 @@ Poniżej kilka screenów z projektu i środowiska DevOps:
 - Pipeline CI/CD jest zaprojektowany tak, by łatwo go rozbudować (monitoring, blue/green, auto-skalowanie).
 - Kod jest modularny i gotowy na dalszą rozbudowę (np. RDS, S3, Load Balancer, Kubernetes).
 
-## Lessons learned
-- **Automatyzacja wszystkiego** (od infrastruktury po deployment) oszczędza czas i minimalizuje błędy.
-- **Oddzielenie środowisk** to podstawa bezpiecznego wdrażania i realnych workflow DevOps.
-- **Remote state i blokada** są kluczowe dla pracy zespołowej i bezpieczeństwa produkcji.
-- **Dobre praktyki bezpieczeństwa** (brak kluczy prywatnych w repo, sekrety w CI/CD) są niezbędne w profesjonalnych projektach.
-- **Dokumentacja i przejrzysta struktura** ułatwiają wdrożenie nowych osób i utrzymanie projektu.
 
 ## FAQ
 **Dlaczego są osobne workflow dla staging i produkcji?**

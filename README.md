@@ -199,12 +199,6 @@ Below are some screenshots from the project and DevOps environment:
 - CI/CD pipelines are designed to be extensible, supporting future additions like monitoring, blue/green deployments, or auto-scaling.
 - The codebase is modular and ready for further expansion (e.g., adding RDS, S3, Load Balancer, or Kubernetes).
 
-## Lessons Learned
-- **Automating everything** (from infrastructure to deployment) saves time and reduces human error.
-- **Separation of environments** is crucial for safe delivery and real-world DevOps workflows.
-- **Remote state and locking** are essential for team collaboration and production safety.
-- **Security best practices** (no private keys in repo, secrets in CI/CD) are non-negotiable in professional projects.
-- **Documentation and clear structure** make onboarding and maintenance much easier.
 
 ## FAQ
 **Q: Why are there separate workflows for staging and production?**
