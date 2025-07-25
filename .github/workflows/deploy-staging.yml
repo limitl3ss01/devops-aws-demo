@@ -1,0 +1,47 @@
+name: Deploy to EC2 Staging
+
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build Docker image
+        run: |
+          docker build -t zajaczek01/devops-aws-demo:latest -f docker/Dockerfile .
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Docker image
+        run: |
+          docker push zajaczek01/devops-aws-demo:latest
+
+      - name: Deploy on EC2 Staging via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST_STAGING }}
+          username: ${{ secrets.EC2_USER_STAGING }}
+          key: ${{ secrets.EC2_SSH_KEY_STAGING }}
+          script: |
+            cd ~/devops-aws-demo/scripts
+            chmod +x deploy.sh
+            ./deploy.sh 
