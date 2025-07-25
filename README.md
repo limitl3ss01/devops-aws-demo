@@ -104,6 +104,21 @@ curl http://localhost:5000/tasks
 curl -X DELETE http://localhost:5000/tasks/1
 ```
 
+### Task model
+Each task has the following fields:
+- `id` (integer): unique identifier
+- `title` (string): task description
+- `done` (boolean): completion status
+
+### Example response from `GET /tasks`
+```json
+[
+  {"id": 1, "title": "Buy milk", "done": false},
+  {"id": 2, "title": "Write DevOps project documentation", "done": false},
+  {"id": 3, "title": "Deploy app to AWS EC2", "done": true}
+]
+```
+
 ---
 
 ## DevOps Automation

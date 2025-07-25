@@ -2,8 +2,12 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-tasks = []
-task_id = 1
+tasks = [
+    {'id': 1, 'title': 'Buy milk', 'done': False},
+    {'id': 2, 'title': 'Write DevOps project documentation', 'done': False},
+    {'id': 3, 'title': 'Deploy app to AWS EC2', 'done': True}
+]
+task_id = 4
 
 @app.route('/health')
 def health():

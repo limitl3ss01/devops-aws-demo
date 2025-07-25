@@ -152,6 +152,21 @@ curl http://localhost:5000/tasks
 curl -X DELETE http://localhost:5000/tasks/1
 ```
 
+### Model zadania
+Każde zadanie posiada następujące pola:
+- `id` (liczba całkowita): unikalny identyfikator
+- `title` (tekst): opis zadania
+- `done` (prawda/fałsz): status wykonania
+
+### Przykładowa odpowiedź z `GET /tasks`
+```json
+[
+  {"id": 1, "title": "Buy milk", "done": false},
+  {"id": 2, "title": "Write DevOps project documentation", "done": false},
+  {"id": 3, "title": "Deploy app to AWS EC2", "done": true}
+]
+```
+
 ---
 
 ## Autor
