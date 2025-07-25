@@ -197,4 +197,4 @@ Poniżej kilka screenów z projektu i środowiska DevOps:
 ---
 
 ## Autor
-zajaczek01 
+zajaczek01 (limitl3ss01)
