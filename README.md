@@ -1,5 +1,7 @@
 # DevOps AWS Demo
 
+[🇵🇱 Polski](README.pl.md) | 🇬🇧 English
+
 A demonstration DevOps project: automatic deployment of a Python (Flask) application to AWS Cloud with CI/CD, Infrastructure as Code (Terraform), and (optionally) monitoring (Prometheus + Grafana).
 
 ---
@@ -76,6 +78,32 @@ sudo docker run -d -p 5000:5000 zajaczek01/devops-aws-demo:latest
 ```
 The app will be available at: `http://PUBLIC_IP_ADDRESS:5000/health`
 
+## REST API – Task Manager
+
+The application exposes a simple REST API for managing tasks (ToDo):
+
+### Endpoints
+- `GET /tasks` – get all tasks
+- `POST /tasks` – add a new task (JSON: `{ "title": "Something to do" }`)
+- `DELETE /tasks/<id>` – delete a task by id
+
+### Example usage (with curl):
+
+**Add a new task:**
+```sh
+curl -X POST http://localhost:5000/tasks -H "Content-Type: application/json" -d '{"title": "Buy milk"}'
+```
+
+**Get all tasks:**
+```sh
+curl http://localhost:5000/tasks
+```
+
+**Delete a task:**
+```sh
+curl -X DELETE http://localhost:5000/tasks/1
+```
+
 ---
 
 ## DevOps Automation
@@ -102,7 +130,7 @@ Below are example screenshots from the project and DevOps environment:
   ![EC2 Instances](diagrams/aws_instances.png)
 
 - **Security Group with open port 5000:**
-  ![Security Group](diagrams/aws_security_group.png)
+  ![Security Group](diagrams/aws_security_groups.png)
 
 - **Result of `docker ps` on EC2:**
   ![Docker PS](diagrams/docker_ps.png)
@@ -117,7 +145,7 @@ Below are example screenshots from the project and DevOps environment:
   ![GitHub Actions](diagrams/github_actions.png)
 
 - **Docker Hub image:**
-  ![Docker Hub](diagrams/docker_hub.png)
+  ![Docker Hub](diagrams/docker_image.png)
 
 - **Architecture diagram (draw.io):**
   ![Architecture Diagram](diagrams/architecture.png)
