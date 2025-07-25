@@ -2,7 +2,7 @@
 
 🇬🇧 English version [here](README.md)
 
-Projekt demonstracyjny DevOps: automatyczny deployment aplikacji Python (Flask) w chmurze AWS z CI/CD, Infrastructure as Code (Terraform) oraz (opcjonalnie) monitoringiem (Prometheus + Grafana).
+To repozytorium to mój własny projekt, w którym chciałem połączyć praktyczną naukę DevOps, automatyzację, chmurę AWS i konteneryzację. Aplikacja to proste REST API w Pythonie (Flask) do zarządzania zadaniami, które automatycznie wdrażam na EC2 przez CI/CD.
 
 ---
 
@@ -11,7 +11,9 @@ Projekt demonstracyjny DevOps: automatyczny deployment aplikacji Python (Flask) 
 - [Architektura](#architektura)
 - [Stack technologiczny](#stack-technologiczny)
 - [Instrukcja uruchomienia](#instrukcja-uruchomienia)
-- [Automatyzacja DevOps](#automatyzacja-devops)
+- [REST API – Task Manager](#rest-api--task-manager)
+- [Automatyczny deployment do chmury (CI/CD na EC2)](#automatyczny-deployment-do-chmury-cicd-na-ec2)
+- [Szybki deployment na EC2](#szybki-deployment-na-ec2)
 - [Dalsze kroki](#dalsze-kroki)
 - [Screeny](#screeny)
 - [Autor](#autor)
@@ -19,14 +21,14 @@ Projekt demonstracyjny DevOps: automatyczny deployment aplikacji Python (Flask) 
 ---
 
 ## Opis projektu
-Projekt pokazuje kompletny proces DevOps: od kodu aplikacji, przez automatyzację testów, budowanie i publikację obrazu Dockera, provisioning infrastruktury w AWS (Terraform), aż po wdrożenie i uruchomienie aplikacji w chmurze. Idealny do portfolio DevOps!
+Chciałem zbudować coś, co łączy kodowanie, konteneryzację, Infrastructure as Code i automatyzację w chmurze. Sercem projektu jest API Flask do zarządzania zadaniami, ale najważniejsza jest tu automatyzacja i pipeline deploymentu.
 
 ## Architektura
-- Aplikacja Python (Flask) uruchamiana w kontenerze Docker
-- CI/CD: GitHub Actions (testy, build, push do Docker Hub)
+- Aplikacja Flask w kontenerze Docker
+- CI/CD: GitHub Actions (testy, build, push do Docker Hub, deployment na EC2)
 - Infrastructure as Code: Terraform (VPC, EC2, Security Group, klucz SSH)
 - Deployment: AWS EC2 (Ubuntu, Docker)
-- Monitoring: (opcjonalnie, do rozbudowy) Prometheus + Grafana
+- (Opcjonalnie) Monitoring: Prometheus + Grafana
 
 ![Diagram architektury](diagrams/architecture.png)
 
@@ -54,8 +56,8 @@ docker-compose up --build
 Aplikacja będzie dostępna pod adresem [http://localhost:5000/health](http://localhost:5000/health)
 
 ### 3. Pipeline CI/CD
-- Testy i budowanie obrazu Dockera uruchamiane automatycznie przez GitHub Actions
-- Obraz Dockera publikowany do Docker Hub: [zajaczek01/devops-aws-demo](https://hub.docker.com/r/zajaczek01/devops-aws-demo)
+- Testy i budowanie obrazu Dockera uruchamiane są automatycznie przez GitHub Actions
+- Obraz Dockera trafia do Docker Hub: [zajaczek01/devops-aws-demo](https://hub.docker.com/r/zajaczek01/devops-aws-demo)
 
 ### 4. Provisioning infrastruktury AWS (Terraform)
 ```sh
@@ -64,7 +66,7 @@ terraform init
 terraform apply
 ```
 - Tworzy EC2, Security Group, klucz SSH
-- Po zakończeniu wyświetli publiczny adres IP EC2
+- Po zakończeniu zobaczysz publiczny adres IP EC2
 
 ### 5. Wdrożenie aplikacji na EC2
 Zaloguj się na EC2:
@@ -77,70 +79,6 @@ sudo apt update && sudo apt install -y docker.io
 sudo docker run -d -p 5000:5000 zajaczek01/devops-aws-demo:latest
 ```
 Aplikacja będzie dostępna pod adresem: `http://PUBLICZNY_ADRES_IP:5000/health`
-
----
-
-## Automatyzacja DevOps
-- Pełny pipeline CI/CD (testy, build, push do Docker Hub)
-- Infrastructure as Code (Terraform)
-- Deployment aplikacji w chmurze AWS
-- Gotowe do rozbudowy: monitoring, automatyczny deployment, Ansible, Prometheus, Grafana
-
----
-
-## Automatyczny deployment do chmury (CI/CD na EC2)
-
-Projekt zawiera profesjonalny workflow GitHub Actions (`.github/workflows/deploy.yml`) do w pełni automatycznego wdrożenia na AWS EC2:
-
-- Przy każdym pushu do gałęzi `main`:
-  - Uruchamiane są testy i budowany jest obraz Dockera
-  - Obraz jest publikowany do Docker Hub
-  - Następuje połączenie przez SSH z serwerem EC2 i uruchomienie skryptu deploymentu (`scripts/deploy.sh`)
-
-**Zalety:**
-- Zero ręcznych kroków przy aktualizacji aplikacji w chmurze
-- Każda zmiana w kodzie jest automatycznie testowana, budowana i wdrażana
-- Pokazuje prawdziwe umiejętności DevOps: CI/CD, automatyzacja, deployment do chmury
-
-Proces deploymentu możesz śledzić w zakładce **Actions** na GitHubie.
-
----
-
-## Dalsze kroki
-- [ ] Automatyzacja deploymentu na EC2 (user-data, Ansible)
-- [ ] Monitoring (Prometheus, Grafana, CloudWatch)
-- [ ] Pełna dokumentacja i diagramy
-- [ ] Bezpieczeństwo (sekrety, ograniczenie portów)
-
----
-
-## Screeny
-
-Poniżej przykładowe screeny z działania projektu i środowiska DevOps:
-
-- **Instancje EC2 w AWS:**
-  ![EC2 Instances](diagrams/aws_instances.png)
-
-- **Security Group z otwartym portem 5000:**
-  ![Security Group](diagrams/aws_security_groups.png)
-
-- **Wynik polecenia `docker ps` na EC2:**
-  ![Docker PS](diagrams/docker_ps.png)
-
-- **Wynik polecenia `curl http://localhost:5000/health` na EC2:**
-  ![Docker Curl](diagrams/docker_curl.png)
-
-- **Widok aplikacji w przeglądarce:**
-  ![Aplikacja w przeglądarce](diagrams/status_ok.png)
-
-- **Workflow GitHub Actions (zielony check):**
-  ![GitHub Actions](diagrams/github_actions.png)
-
-- **Obraz na Docker Hub:**
-  ![Docker Hub](diagrams/docker_image.png)
-
-- **Diagram architektury (draw.io):**
-  ![Diagram architektury](diagrams/architecture.png)
 
 ---
 
@@ -187,6 +125,22 @@ Każde zadanie posiada następujące pola:
 
 ---
 
+## Automatyczny deployment do chmury (CI/CD na EC2)
+
+W repozytorium jest workflow GitHub Actions (`.github/workflows/deploy.yml`), który automatyzuje wdrożenie na AWS EC2:
+
+- Przy każdym pushu do gałęzi `main`:
+  - Uruchamiane są testy i budowany jest obraz Dockera
+  - Obraz trafia do Docker Hub
+  - Następuje połączenie przez SSH z EC2 i uruchomienie skryptu deploymentu (`scripts/deploy.sh`)
+
+**Dlaczego tak?**
+Chciałem, żeby każda zmiana w kodzie była automatycznie testowana, budowana i wdrażana w chmurze – bez ręcznych kroków. Tak wygląda nowoczesna automatyzacja DevOps.
+
+Proces deploymentu możesz śledzić w zakładce **Actions** na GitHubie.
+
+---
+
 ## Szybki deployment na EC2
 
 Aby zaktualizować i uruchomić najnowszą wersję aplikacji na serwerze EC2, użyj dołączonego skryptu:
@@ -201,6 +155,44 @@ Skrypt automatycznie:
 - Zatrzymuje i usuwa stary kontener (jeśli istnieje)
 - Pobiera najnowszy obraz z Docker Hub
 - Uruchamia nowy kontener na porcie 5000
+
+---
+
+## Dalsze kroki
+- [ ] Monitoring (Prometheus, Grafana, CloudWatch)
+- [ ] Bardziej zaawansowana infrastruktura (S3, RDS, Load Balancer)
+- [ ] Bezpieczeństwo (sekrety, HTTPS, ograniczenie portów)
+- [ ] Rozbudowa API i testów
+
+---
+
+## Screeny
+
+Poniżej kilka screenów z projektu i środowiska DevOps:
+
+- **Instancje EC2 w AWS:**
+  ![EC2 Instances](diagrams/aws_instances.png)
+
+- **Security Group z otwartym portem 5000:**
+  ![Security Group](diagrams/aws_security_group.png)
+
+- **Wynik polecenia `docker ps` na EC2:**
+  ![Docker PS](diagrams/docker_ps.png)
+
+- **Wynik polecenia `curl http://localhost:5000/health` na EC2:**
+  ![Docker Curl](diagrams/docker_curl.png)
+
+- **Widok aplikacji w przeglądarce:**
+  ![Aplikacja w przeglądarce](diagrams/status_ok.png)
+
+- **Workflow GitHub Actions (zielony check):**
+  ![GitHub Actions](diagrams/github_actions.png)
+
+- **Obraz na Docker Hub:**
+  ![Docker Hub](diagrams/docker_hub.png)
+
+- **Diagram architektury (draw.io):**
+  ![Diagram architektury](diagrams/architecture.png)
 
 ---
 

@@ -2,7 +2,7 @@
 
 [🇵🇱 Polski](README.pl.md) | 🇬🇧 English
 
-A demonstration DevOps project: automatic deployment of a Python (Flask) application to AWS Cloud with CI/CD, Infrastructure as Code (Terraform), and (optionally) monitoring (Prometheus + Grafana).
+This repository contains a project I built to learn and demonstrate modern DevOps practices using AWS, Docker, Terraform, and CI/CD automation. The application is a simple Python Flask REST API for managing tasks, deployed automatically to an AWS EC2 instance.
 
 ---
 
@@ -11,7 +11,9 @@ A demonstration DevOps project: automatic deployment of a Python (Flask) applica
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
-- [DevOps Automation](#devops-automation)
+- [REST API – Task Manager](#rest-api--task-manager)
+- [Automated cloud deployment (CI/CD to EC2)](#automated-cloud-deployment-cicd-to-ec2)
+- [Quick deployment on EC2](#quick-deployment-on-ec2)
 - [Next Steps](#next-steps)
 - [Screenshots](#screenshots)
 - [Author](#author)
@@ -19,14 +21,14 @@ A demonstration DevOps project: automatic deployment of a Python (Flask) applica
 ---
 
 ## Project Overview
-This project demonstrates a complete DevOps workflow: from application code, through automated testing, Docker image build and publishing, infrastructure provisioning in AWS (Terraform), to deployment and running the app in the cloud. Perfect for a DevOps portfolio!
+This project is a hands-on implementation of a DevOps workflow. I wanted to combine coding, containerization, infrastructure as code, and cloud automation in one place. The core is a Flask API for managing tasks, but the real value is in the automation and deployment pipeline.
 
 ## Architecture
-- Python (Flask) app running in a Docker container
-- CI/CD: GitHub Actions (tests, build, push to Docker Hub)
+- Python Flask app running in a Docker container
+- CI/CD: GitHub Actions (tests, build, push to Docker Hub, deploy to AWS EC2)
 - Infrastructure as Code: Terraform (VPC, EC2, Security Group, SSH key)
 - Deployment: AWS EC2 (Ubuntu, Docker)
-- Monitoring: (optional, for future) Prometheus + Grafana
+- (Optional) Monitoring: Prometheus + Grafana
 
 ![Architecture Diagram](diagrams/architecture.png)
 
@@ -63,7 +65,7 @@ cd terraform
 terraform init
 terraform apply
 ```
-- Creates EC2, Security Group, SSH key
+- This creates an EC2 instance, Security Group, and SSH key
 - After completion, the public IP address of the EC2 instance will be displayed
 
 ### 5. Deploy the app on EC2
@@ -77,6 +79,8 @@ sudo apt update && sudo apt install -y docker.io
 sudo docker run -d -p 5000:5000 zajaczek01/devops-aws-demo:latest
 ```
 The app will be available at: `http://PUBLIC_IP_ADDRESS:5000/health`
+
+---
 
 ## REST API – Task Manager
 
@@ -121,52 +125,21 @@ Each task has the following fields:
 
 ---
 
-## DevOps Automation
-- Full CI/CD pipeline (tests, build, push to Docker Hub)
-- Infrastructure as Code (Terraform)
-- Application deployment in AWS Cloud
-- Ready for extension: monitoring, auto-deployment, Ansible, Prometheus, Grafana
+## Automated cloud deployment (CI/CD to EC2)
+
+This repository includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that automates deployment to AWS EC2:
+
+- On every push to the `main` branch:
+  - Runs tests and builds the Docker image
+  - Publishes the image to Docker Hub
+  - Connects to my EC2 server via SSH and runs the deployment script (`scripts/deploy.sh`)
+
+**Why?**
+I wanted to automate the entire process so that every code change is tested, built, and deployed to the cloud without manual steps. This is how I would approach real-world DevOps automation.
+
+You can monitor the deployment process in the **Actions** tab on GitHub.
 
 ---
-
-## Next Steps
-- [ ] Automate deployment on EC2 (user-data, Ansible)
-- [ ] Monitoring (Prometheus, Grafana, CloudWatch)
-- [ ] Complete documentation and diagrams
-- [ ] Security (secrets, port restrictions)
-
----
-
-## Screenshots
-
-Below are example screenshots from the project and DevOps environment:
-
-- **EC2 Instances in AWS:**
-  ![EC2 Instances](diagrams/aws_instances.png)
-
-- **Security Group with open port 5000:**
-  ![Security Group](diagrams/aws_security_groups.png)
-
-- **Result of `docker ps` on EC2:**
-  ![Docker PS](diagrams/docker_ps.png)
-
-- **Result of `curl http://localhost:5000/health` on EC2:**
-  ![Docker Curl](diagrams/docker_curl.png)
-
-- **App in the browser:**
-  ![App in browser](diagrams/status_ok.png)
-
-- **GitHub Actions workflow (green check):**
-  ![GitHub Actions](diagrams/github_actions.png)
-
-- **Docker Hub image:**
-  ![Docker Hub](diagrams/docker_image.png)
-
-- **Architecture diagram (draw.io):**
-  ![Architecture Diagram](diagrams/architecture.png)
-
----
-
 
 ## Quick deployment on EC2
 
@@ -181,25 +154,45 @@ chmod +x deploy.sh
 This script will:
 - Stop and remove the old container (if exists)
 - Pull the latest image from Docker Hub
-- Start a new container on port 5000 
+- Start a new container on port 5000
 
 ---
 
-## Automated cloud deployment (CI/CD to EC2)
+## Next Steps
+- [ ] Add monitoring (Prometheus, Grafana, CloudWatch)
+- [ ] Add more advanced infrastructure (S3, RDS, Load Balancer)
+- [ ] Improve security (secrets, HTTPS, port restrictions)
+- [ ] Add more API features and tests
 
-This project features a professional GitHub Actions workflow (`.github/workflows/deploy.yml`) for fully automated deployment to AWS EC2:
+---
 
-- On every push to the `main` branch:
-  - Runs tests and builds the Docker image
-  - Publishes the image to Docker Hub
-  - Connects to your EC2 server via SSH and runs the deployment script (`scripts/deploy.sh`)
+## Screenshots
 
-**Benefits:**
-- No manual steps required to update your app in the cloud
-- Every code change is automatically tested, built, and deployed
-- Shows real DevOps skills: CI/CD, automation, cloud deployment
+Below are some screenshots from the project and DevOps environment:
 
-You can monitor the deployment process in the **Actions** tab on GitHub.
+- **EC2 Instances in AWS:**
+  ![EC2 Instances](diagrams/aws_instances.png)
+
+- **Security Group with open port 5000:**
+  ![Security Group](diagrams/aws_security_group.png)
+
+- **Result of `docker ps` on EC2:**
+  ![Docker PS](diagrams/docker_ps.png)
+
+- **Result of `curl http://localhost:5000/health` on EC2:**
+  ![Docker Curl](diagrams/docker_curl.png)
+
+- **App in the browser:**
+  ![App in browser](diagrams/status_ok.png)
+
+- **GitHub Actions workflow (green check):**
+  ![GitHub Actions](diagrams/github_actions.png)
+
+- **Docker Hub image:**
+  ![Docker Hub](diagrams/docker_hub.png)
+
+- **Architecture diagram (draw.io):**
+  ![Architecture Diagram](diagrams/architecture.png)
 
 ---
 
