@@ -5,9 +5,10 @@ app = Flask(__name__)
 tasks = [
     {'id': 1, 'title': 'Buy milk', 'done': False},
     {'id': 2, 'title': 'Write DevOps project documentation', 'done': False},
-    {'id': 3, 'title': 'Deploy app to AWS EC2', 'done': True}
+    {'id': 3, 'title': 'Deploy app to AWS EC2', 'done': True},
+    {'id': 4, 'title': 'Test GitHub Actions deployment', 'done': False}
 ]
-task_id = 4
+task_id = 5
 
 @app.route('/health')
 def health():
