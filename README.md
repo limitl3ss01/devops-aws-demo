@@ -38,7 +38,7 @@ This project is a hands-on implementation of a DevOps workflow. I wanted to comb
 - GitHub Actions
 - Terraform
 - AWS (EC2, VPC, IAM)
-- (Optional: Prometheus, Grafana)
+- Monitoring: Prometheus, Grafana, Structured Logging
 
 ## Getting Started
 
@@ -82,6 +82,47 @@ The app will be available at: `http://PUBLIC_IP_ADDRESS:5000/health`
 
 ---
 
+## Monitoring
+
+The application includes comprehensive monitoring with Prometheus metrics, structured logging, and Grafana dashboards.
+
+### Local Monitoring Setup
+
+1. **Start the monitoring stack:**
+```sh
+cd monitoring
+chmod +x start-monitoring.sh
+./start-monitoring.sh
+```
+
+2. **Test the monitoring setup:**
+```sh
+python test-monitoring.py
+```
+
+3. **Access monitoring tools:**
+- **Grafana Dashboard:** http://localhost:3000 (admin/admin)
+- **Prometheus:** http://localhost:9090
+- **Application Metrics:** http://localhost:5000/metrics
+
+### Monitoring Features
+
+- **Prometheus Metrics:** HTTP requests, latency, task counts
+- **Structured Logging:** JSON format with request context
+- **Health Checks:** Detailed application status
+- **Grafana Dashboard:** Pre-configured dashboard with key metrics
+- **Real-time Monitoring:** Live metrics and alerts
+
+### Metrics Available
+
+- `http_requests_total` - Total HTTP requests by method/endpoint/status
+- `http_request_duration_seconds` - Request latency histogram
+- `http_requests_active` - Currently active requests
+- `tasks_total` - Total number of tasks
+- `tasks_completed` - Number of completed tasks
+
+---
+
 ## REST API – Task Manager
 
 The application exposes a simple REST API for managing tasks (ToDo):
@@ -90,6 +131,10 @@ The application exposes a simple REST API for managing tasks (ToDo):
 - `GET /tasks` – get all tasks
 - `POST /tasks` – add a new task (JSON: `{ "title": "Something to do" }`)
 - `DELETE /tasks/<id>` – delete a task by id
+- `PUT /tasks/<id>/toggle` – toggle task completion status
+- `GET /health` – health check with detailed status
+- `GET /status` – application status with metrics
+- `GET /metrics` – Prometheus metrics endpoint
 
 ### Example usage (with curl):
 
