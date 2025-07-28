@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import logging
 import time
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 from pythonjsonlogger import jsonlogger
 
@@ -81,7 +81,7 @@ def health():
         # Basic health checks
         health_status = {
             'status': 'ok',
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'version': '1.0.0',
             'checks': {
                 'database': 'ok',  # Placeholder for future DB integration
@@ -182,7 +182,7 @@ def status():
     try:
         status_info = {
             'status': 'running',
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'version': '1.0.0',
             'metrics': {
                 'total_tasks': len(tasks),
