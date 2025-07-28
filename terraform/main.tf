@@ -5,7 +5,7 @@ resource "aws_key_pair" "deployer" {
 
 resource "aws_security_group" "devops_sg" {
   name        = "devops-aws-demo-sg"
-  description = "Allow SSH and HTTP"
+  description = "Allow SSH, HTTP, and monitoring ports"
   vpc_id      = aws_default_vpc.default.id
 
   ingress {
@@ -13,13 +13,33 @@ resource "aws_security_group" "devops_sg" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "SSH"
   }
+  
   ingress {
     from_port   = 5000
     to_port     = 5000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Flask Application"
   }
+  
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Grafana Dashboard"
+  }
+  
+  ingress {
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Prometheus"
+  }
+  
   egress {
     from_port   = 0
     to_port     = 0
