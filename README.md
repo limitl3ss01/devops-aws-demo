@@ -2,7 +2,7 @@
 
 [🇵🇱 Polski](README.pl.md) | 🇬🇧 English
 
-This repository contains a project I built to learn and demonstrate modern DevOps practices using AWS, Docker, Terraform, and CI/CD automation. The application is a simple Python Flask REST API for managing tasks, deployed automatically to an AWS EC2 instance.
+This repository contains a project I built to learn and demonstrate modern DevOps practices using AWS, Docker, Terraform, and CI/CD automation. The application is a simple Python Flask REST API for managing tasks, deployed automatically to AWS EC2 instances with comprehensive monitoring.
 
 ---
 
@@ -12,8 +12,12 @@ This repository contains a project I built to learn and demonstrate modern DevOp
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
 - [REST API – Task Manager](#rest-api--task-manager)
-- [Automated cloud deployment (CI/CD to EC2)](#automated-cloud-deployment-cicd-to-ec2)
-- [Quick deployment on EC2](#quick-deployment-on-ec2)
+- [Monitoring System](#monitoring-system)
+- [Automated Deployment (CI/CD)](#automated-deployment-cicd)
+- [Infrastructure as Code](#infrastructure-as-code)
+- [Scripts and Automation](#scripts-and-automation)
+- [Environment Management](#environment-management)
+- [Troubleshooting](#troubleshooting)
 - [Next Steps](#next-steps)
 - [Screenshots](#screenshots)
 - [Author](#author)
@@ -21,24 +25,25 @@ This repository contains a project I built to learn and demonstrate modern DevOp
 ---
 
 ## Project Overview
-This project is a hands-on implementation of a DevOps workflow. I wanted to combine coding, containerization, infrastructure as code, and cloud automation in one place. The core is a Flask API for managing tasks, but the real value is in the automation and deployment pipeline.
+This project is a hands-on implementation of a complete DevOps workflow. I wanted to combine coding, containerization, infrastructure as code, cloud automation, and monitoring in one place. The core is a Flask API for managing tasks, but the real value is in the automation, deployment pipeline, and comprehensive monitoring system.
 
 ## Architecture
-- Python Flask app running in a Docker container
-- CI/CD: GitHub Actions (tests, build, push to Docker Hub, deploy to AWS EC2)
-- Infrastructure as Code: Terraform (VPC, EC2, Security Group, SSH key)
-- Deployment: AWS EC2 (Ubuntu, Docker)
-- (Optional) Monitoring: Prometheus + Grafana
+- **Python Flask app** running in Docker containers
+- **CI/CD Pipeline**: GitHub Actions (tests, build, push to Docker Hub, deploy to AWS EC2)
+- **Infrastructure as Code**: Terraform (VPC, EC2, Security Groups, SSH keys)
+- **Deployment**: AWS EC2 (Ubuntu, Docker) across multiple environments
+- **Monitoring**: Prometheus + Grafana + Structured Logging
+- **Automation**: Custom scripts for deployment and monitoring management
 
 ![Architecture Diagram](diagrams/architecture.png)
 
 ## Tech Stack
-- Python 3.x, Flask
-- Docker
-- GitHub Actions
-- Terraform
-- AWS (EC2, VPC, IAM)
-- Monitoring: Prometheus, Grafana, Structured Logging
+- **Backend**: Python 3.x, Flask
+- **Containerization**: Docker, Docker Compose
+- **CI/CD**: GitHub Actions
+- **Infrastructure**: Terraform, AWS (EC2, VPC, IAM)
+- **Monitoring**: Prometheus, Grafana, Structured Logging
+- **Testing**: pytest
 
 ## Getting Started
 
@@ -55,84 +60,40 @@ docker-compose up --build
 ```
 The app will be available at [http://localhost:5000/health](http://localhost:5000/health)
 
-### 3. CI/CD Pipeline
+### 3. Local Monitoring Setup
+```sh
+cd monitoring
+# Windows:
+.\start-monitoring.ps1
+# Linux/Mac:
+./start-monitoring.sh
+```
+
+### 4. CI/CD Pipeline
 - Tests and Docker image build are triggered automatically by GitHub Actions
 - Docker image is published to Docker Hub: [zajaczek01/devops-aws-demo](https://hub.docker.com/r/zajaczek01/devops-aws-demo)
 
-### 4. AWS Infrastructure Provisioning (Terraform)
+### 5. AWS Infrastructure Provisioning (Terraform)
 ```sh
 cd terraform
 terraform init
 terraform apply
 ```
-- This creates an EC2 instance, Security Group, and SSH key
-- After completion, the public IP address of the EC2 instance will be displayed
-
-### 5. Deploy the app on EC2
-SSH into the EC2 instance:
-```sh
-ssh -i devops-aws-demo-key ubuntu@PUBLIC_IP_ADDRESS
-```
-Install Docker and run the app:
-```sh
-sudo apt update && sudo apt install -y docker.io
-sudo docker run -d -p 5000:5000 zajaczek01/devops-aws-demo:latest
-```
-The app will be available at: `http://PUBLIC_IP_ADDRESS:5000/health`
-
----
-
-## Monitoring
-
-The application includes comprehensive monitoring with Prometheus metrics, structured logging, and Grafana dashboards.
-
-### Local Monitoring Setup
-
-1. **Start the monitoring stack:**
-```sh
-cd monitoring
-chmod +x start-monitoring.sh
-./start-monitoring.sh
-```
-
-2. **Test the monitoring setup:**
-```sh
-python test-monitoring.py
-```
-
-3. **Access monitoring tools:**
-- **Grafana Dashboard:** http://localhost:3000 (admin/admin)
-- **Prometheus:** http://localhost:9090
-- **Application Metrics:** http://localhost:5000/metrics
-
-### Monitoring Features
-
-- **Prometheus Metrics:** HTTP requests, latency, task counts
-- **Structured Logging:** JSON format with request context
-- **Health Checks:** Detailed application status
-- **Grafana Dashboard:** Pre-configured dashboard with key metrics
-- **Real-time Monitoring:** Live metrics and alerts
-
-### Metrics Available
-
-- `http_requests_total` - Total HTTP requests by method/endpoint/status
-- `http_request_duration_seconds` - Request latency histogram
-- `http_requests_active` - Currently active requests
-- `tasks_total` - Total number of tasks
-- `tasks_completed` - Number of completed tasks
+- This creates EC2 instances, Security Groups, and SSH keys for all environments
+- After completion, the public IP addresses will be displayed
 
 ---
 
 ## REST API – Task Manager
 
-The application exposes a simple REST API for managing tasks (ToDo):
+The application exposes a comprehensive REST API for managing tasks with monitoring capabilities:
 
 ### Endpoints
 - `GET /tasks` – get all tasks
 - `POST /tasks` – add a new task (JSON: `{ "title": "Something to do" }`)
 - `DELETE /tasks/<id>` – delete a task by id
 - `PUT /tasks/<id>/toggle` – toggle task completion status
-- `GET /health` – health check with detailed status
+- `GET /health` – enhanced health check with detailed status
 - `GET /status` – application status with metrics
 - `GET /metrics` – Prometheus metrics endpoint
 
@@ -148,176 +109,423 @@ curl -X POST http://localhost:5000/tasks -H "Content-Type: application/json" -d 
 curl http://localhost:5000/tasks
 ```
 
-**Delete a task:**
+**Toggle task completion:**
 ```sh
-curl -X DELETE http://localhost:5000/tasks/1
+curl -X PUT http://localhost:5000/tasks/1/toggle
 ```
 
-### Task model
-Each task has the following fields:
-- `id` (integer): unique identifier
-- `title` (string): task description
-- `done` (boolean): completion status
+**Check application health:**
+```sh
+curl http://localhost:5000/health
+```
 
-### Example response from `GET /tasks`
+**View Prometheus metrics:**
+```sh
+curl http://localhost:5000/metrics
+```
+
+---
+
+## Monitoring System
+
+The project includes a comprehensive monitoring solution with Prometheus, Grafana, and structured logging.
+
+### Components
+
+#### 1. **Prometheus Metrics**
+- **HTTP Request Metrics**: Total requests, latency, active requests
+- **Application Metrics**: Task counts, completion rates
+- **Custom Metrics**: Business-specific measurements
+- **Real-time Collection**: Metrics scraped every 10 seconds
+
+#### 2. **Grafana Dashboards**
+- **Pre-configured Dashboard**: Ready-to-use visualizations
+- **Real-time Monitoring**: Live metrics and alerts
+- **Custom Panels**: HTTP requests, latency, task metrics
+- **Access**: http://PUBLIC_IP:3000 (admin/admin)
+
+#### 3. **Structured Logging**
+- **JSON Format**: Machine-readable logs with context
+- **Request Tracking**: Automatic timing and error logging
+- **Performance Metrics**: Response times and throughput
+- **Error Handling**: Comprehensive error tracking
+
+### Metrics Available
+
+| Metric | Description | Type |
+|--------|-------------|------|
+| `http_requests_total` | Total HTTP requests by method/endpoint/status | Counter |
+| `http_request_duration_seconds` | Request latency histogram | Histogram |
+| `http_requests_active` | Currently active requests | Gauge |
+| `tasks_total` | Total number of tasks | Gauge |
+| `tasks_completed` | Number of completed tasks | Gauge |
+
+### Health Checks
+
+#### Enhanced Health Endpoint (`/health`)
 ```json
-[
-  {"id": 1, "title": "Buy milk", "done": false},
-  {"id": 2, "title": "Write DevOps project documentation", "done": false},
-  {"id": 3, "title": "Deploy app to AWS EC2", "done": true}
-]
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T12:00:00",
+  "version": "1.0.0",
+  "checks": {
+    "database": "ok",
+    "memory": "ok", 
+    "disk": "ok"
+  }
+}
+```
+
+#### Status Endpoint (`/status`)
+```json
+{
+  "status": "running",
+  "timestamp": "2024-01-01T12:00:00",
+  "version": "1.0.0",
+  "metrics": {
+    "total_tasks": 4,
+    "completed_tasks": 1,
+    "pending_tasks": 3
+  }
+}
 ```
 
 ---
 
-## Automated cloud deployment (CI/CD to EC2)
+## Automated Deployment (CI/CD)
 
-This repository includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that automates deployment to AWS EC2:
+The project implements a complete CI/CD pipeline using GitHub Actions.
 
-- On every push to the `main` branch:
-  - Runs tests and builds the Docker image
-  - Publishes the image to Docker Hub
-  - Connects to my EC2 server via SSH and runs the deployment script (`scripts/deploy.sh`)
+### Pipeline Flow
 
-**Why?**
-I wanted to automate the entire process so that every code change is tested, built, and deployed to the cloud without manual steps. This is how I would approach real-world DevOps automation.
+1. **Code Push** → Triggers GitHub Actions
+2. **Testing** → Runs pytest suite
+3. **Build** → Creates Docker image
+4. **Push** → Uploads to Docker Hub
+5. **Sync** → Copies code to EC2 servers (SCP)
+6. **Deploy** → Runs deployment scripts
+7. **Verify** → Health checks and monitoring setup
 
-You can monitor the deployment process in the **Actions** tab on GitHub.
+### Environment Strategy
+
+| Branch | Environment | Docker Tag | Deployment |
+|--------|-------------|------------|------------|
+| `main` | Production | `latest` | EC2 + EC2 Production |
+| `develop` | Staging | `staging` | Staging EC2 |
+
+### GitHub Actions Workflows
+
+#### Main Deployment (`deploy.yml`)
+- **Trigger**: Push to `main` branch
+- **Targets**: EC2 + EC2 Production
+- **Features**: Full monitoring deployment
+
+#### Production Deployment (`deploy-prod.yml`)
+- **Trigger**: Push to `main` branch  
+- **Targets**: EC2 Production
+- **Features**: Production-specific configuration
+
+#### Staging Deployment (`deploy-staging.yml`)
+- **Trigger**: Push to `develop` branch
+- **Targets**: Staging EC2
+- **Features**: Testing environment
 
 ---
 
-## Quick deployment on EC2
+## Infrastructure as Code
 
-To update and run the latest version of the app on your EC2 server, use the provided script:
+The project uses Terraform for infrastructure management across multiple environments.
 
-```sh
-cd scripts
-chmod +x deploy.sh
+### Environments
+
+#### Main Environment (`terraform/`)
+- **Purpose**: Development/Testing
+- **Components**: EC2, Security Groups, SSH Keys
+- **Monitoring**: Prometheus + Grafana
+
+#### Staging Environment (`environments/staging/`)
+- **Purpose**: Pre-production testing
+- **Components**: Staging EC2, Security Groups
+- **Monitoring**: Full monitoring stack
+
+#### Production Environment (`environments/production/`)
+- **Purpose**: Live production
+- **Components**: Production EC2, Security Groups
+- **Monitoring**: Production monitoring
+
+### Security Groups
+
+All environments include properly configured Security Groups with:
+- **Port 22**: SSH access
+- **Port 5000**: Flask application
+- **Port 3000**: Grafana dashboard
+- **Port 9090**: Prometheus metrics
+
+---
+
+## Scripts and Automation
+
+The project includes comprehensive automation scripts for deployment and monitoring management.
+
+### Deployment Scripts
+
+#### `scripts/deploy.sh`
+**Purpose**: Main deployment script with monitoring integration
+**Features**:
+- Docker container management
+- Health checks
+- Automatic monitoring deployment
+- Environment-specific configuration
+
+```bash
+# Usage
+cd ~/devops-aws-demo/scripts
 ./deploy.sh
 ```
 
-This script will:
-- Stop and remove the old container (if exists)
-- Pull the latest image from Docker Hub
-- Start a new container on port 5000
+#### `scripts/setup-monitoring.sh`
+**Purpose**: Automated monitoring stack deployment
+**Features**:
+- Prometheus + Grafana setup
+- Configuration file copying
+- Service health verification
+- Automatic startup
+
+```bash
+# Usage
+cd ~/devops-aws-demo/scripts
+./setup-monitoring.sh
+```
+
+### Monitoring Management Scripts
+
+#### `scripts/manage-monitoring.sh`
+**Purpose**: Monitoring stack management
+**Commands**:
+- `start` - Start monitoring stack
+- `stop` - Stop monitoring stack
+- `restart` - Restart monitoring stack
+- `status` - Check monitoring status
+- `logs` - View monitoring logs
+- `update` - Update monitoring configuration
+
+```bash
+# Usage
+cd ~/devops-aws-demo/scripts
+./manage-monitoring.sh start
+./manage-monitoring.sh status
+./manage-monitoring.sh logs
+```
+
+### Security Group Management
+
+#### `scripts/update-security-groups.sh`
+**Purpose**: Update Security Groups for all environments
+**Features**:
+- Add monitoring ports (3000, 9090)
+- Update all environments at once
+- Terraform integration
+
+```bash
+# Usage
+cd devops-aws-demo/scripts
+./update-security-groups.sh
+```
+
+#### `scripts/fix-security-group.ps1`
+**Purpose**: Windows PowerShell script for Security Group updates
+**Features**:
+- Safe port addition without destroying groups
+- AWS CLI integration
+- Error handling
+
+```bash
+# Usage
+cd devops-aws-demo/scripts
+.\fix-security-group.ps1
+```
+
+### Local Development Scripts
+
+#### `monitoring/start-monitoring.sh`
+**Purpose**: Local monitoring stack startup
+**Features**:
+- Docker Compose management
+- Service verification
+- Health checks
+
+#### `monitoring/start-monitoring.ps1`
+**Purpose**: Windows PowerShell version for local monitoring
+**Features**:
+- Cross-platform compatibility
+- Error handling
+- Service status verification
+
+#### `monitoring/test-monitoring.py`
+**Purpose**: Monitoring system testing
+**Features**:
+- Load generation
+- Health check verification
+- Metrics validation
+- End-to-end testing
+
+```bash
+# Usage
+cd monitoring
+python test-monitoring.py
+```
+
+---
+
+## Environment Management
+
+### Environment Strategy
+
+The project supports multiple environments with automated deployment:
+
+#### Development Environment
+- **Branch**: `main`
+- **Purpose**: Active development
+- **Deployment**: Manual or automated
+- **Monitoring**: Full stack
+
+#### Staging Environment  
+- **Branch**: `develop`
+- **Purpose**: Pre-production testing
+- **Deployment**: Automated on push
+- **Monitoring**: Full stack
+
+#### Production Environment
+- **Branch**: `main`
+- **Purpose**: Live production
+- **Deployment**: Automated on push
+- **Monitoring**: Production-optimized
+
+### Environment Variables
+
+#### Required GitHub Secrets
+```
+DOCKERHUB_USERNAME=your_dockerhub_username
+DOCKERHUB_TOKEN=your_dockerhub_token
+EC2_HOST=your_ec2_public_ip
+EC2_USER=ubuntu
+EC2_SSH_KEY=your_ssh_private_key
+EC2_HOST_PROD=your_production_ec2_ip
+EC2_USER_PROD=ubuntu
+EC2_SSH_KEY_PROD=your_production_ssh_key
+STAGING_HOST=your_staging_ec2_ip
+STAGING_USER=ubuntu
+STAGING_SSH_KEY=your_staging_ssh_key
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+#### 1. Monitoring Not Starting
+**Problem**: Docker Compose version error
+**Solution**: Update `monitoring/docker-compose.yml` to use version `3.3`
+
+#### 2. Security Group Issues
+**Problem**: Ports not accessible
+**Solution**: Use `scripts/fix-security-group.ps1` to add monitoring ports
+
+#### 3. Git Synchronization Issues
+**Problem**: Local changes blocking updates
+**Solution**: Reset local changes and pull from remote
+```bash
+git reset --hard HEAD
+git pull origin main
+```
+
+#### 4. Monitoring Access Issues
+**Problem**: Cannot access Grafana/Prometheus
+**Solution**: 
+1. Check Security Group rules
+2. Verify monitoring stack is running
+3. Check firewall settings
+
+### Health Check Commands
+
+#### Application Health
+```bash
+curl http://PUBLIC_IP:5000/health
+curl http://PUBLIC_IP:5000/status
+```
+
+#### Monitoring Health
+```bash
+curl http://PUBLIC_IP:3000  # Grafana
+curl http://PUBLIC_IP:9090  # Prometheus
+```
+
+#### Docker Container Status
+```bash
+docker ps
+docker logs devops-aws-demo
+```
 
 ---
 
 ## Next Steps
-- [ ] Add monitoring (Prometheus, Grafana, CloudWatch)
-- [ ] Add more advanced infrastructure (S3, RDS, Load Balancer)
-- [ ] Improve security (secrets, HTTPS, port restrictions)
-- [ ] Add more API features and tests
+
+### Potential Enhancements
+
+1. **Alerting System**
+   - Configure AlertManager for Prometheus
+   - Set up email/Slack notifications
+   - Implement custom alert rules
+
+2. **Database Integration**
+   - Add PostgreSQL/MySQL support
+   - Implement data persistence
+   - Add database monitoring
+
+3. **Load Balancing**
+   - Implement AWS ALB
+   - Add auto-scaling groups
+   - Configure health checks
+
+4. **Security Enhancements**
+   - Implement HTTPS/TLS
+   - Add authentication/authorization
+   - Configure AWS WAF
+
+5. **Advanced Monitoring**
+   - Add APM (Application Performance Monitoring)
+   - Implement distributed tracing
+   - Add custom business metrics
+
+6. **Backup and Recovery**
+   - Implement automated backups
+   - Add disaster recovery procedures
+   - Configure data retention policies
 
 ---
 
 ## Screenshots
 
-Below are some screenshots from the project and DevOps environment:
-
-- **EC2 Instances in AWS:**
-  ![EC2 Instances](diagrams/aws_instances.png)
-
-- **Security Group with open port 5000:**
-  ![Security Group](diagrams/aws_security_groups.png)
-
-- **Architecture diagram (draw.io):**
-  ![Architecture Diagram](diagrams/architecture.png)
+### Application Screenshots
+- [Architecture Diagram](diagrams/architecture.png)
+- [AWS Instances](diagrams/aws_instances.png)
+- [Security Groups](diagrams/aws_security_groups.png)
+- [Docker Images](diagrams/docker_image.png)
+- [GitHub Actions](diagrams/github_actions.png)
+- [Monitoring Dashboard](diagrams/status_ok.png)
 
 ---
 
-
-## Security Practices
-- **Private SSH keys are never stored in the repository.** All sensitive credentials are managed via GitHub Secrets or stored securely outside version control.
-- **Public keys** are used for provisioning EC2 access and can be safely versioned.
-- **Terraform remote state** is stored in S3 with state locking via DynamoDB to prevent concurrent modifications and ensure team safety.
-- **Secrets management** leverages GitHub Actions encrypted secrets for all deployment credentials.
-
-## Environment Management
-- Each environment (staging, production) has its own isolated infrastructure, state, and deployment pipeline.
-- Environment-specific variables are managed via separate `terraform.tfvars` files and backend configurations.
-- This separation allows safe testing and validation in staging before promoting changes to production.
-
-## Project Development Strategy
-- The project started as a simple Flask API and evolved into a full DevOps automation showcase.
-- Infrastructure is managed as code from the start, enabling reproducibility and easy scaling.
-- CI/CD pipelines are designed to be extensible, supporting future additions like monitoring, blue/green deployments, or auto-scaling.
-- The codebase is modular and ready for further expansion (e.g., adding RDS, S3, Load Balancer, or Kubernetes).
-
-
-## FAQ
-**Q: Why are there separate workflows for staging and production?**
-A: This mirrors real-world DevOps practices, where changes are tested in staging before being promoted to production, reducing risk.
-
-**Q: How are secrets and credentials managed?**
-A: All sensitive data is stored in GitHub Secrets and never committed to the repository. Only public keys are versioned.
-
-**Q: Can this project be extended to use ECS, EKS, or Kubernetes?**
-A: Yes! The modular structure and automation make it easy to add more advanced AWS services or migrate to container orchestration platforms.
-
-**Q: How would you add monitoring or alerting?**
-A: By provisioning Prometheus and Grafana (via Terraform or Ansible), exposing app metrics, and integrating with Alertmanager or AWS CloudWatch for notifications.
-
-## Testing Approach
-- **Unit tests** are included for the Flask API endpoints and are run automatically in the CI pipeline.
-- **Integration tests** can be added to validate the full deployment (e.g., checking `/health` and `/tasks` on staging after deploy).
-- **Test coverage** is tracked and can be reported as a CI artifact for quality assurance.
-- The project is structured to easily add more advanced tests (e.g., load testing, security scanning) as it evolves.
-
-## Future Directions
-- **Migration to ECS/EKS or Kubernetes** for container orchestration and advanced deployment strategies.
-- **Blue/Green or Canary Deployments** to enable zero-downtime releases and safer rollouts.
-- **Policy enforcement for IaC** using tools like Terraform Sentinel or Open Policy Agent.
-- **Automated cost monitoring and optimization** for cloud resources.
-- **Self-healing infrastructure** with auto-recovery and health checks.
-- **Automated backup and disaster recovery** for critical data and state.
-
-## Challenges and Solutions
-- **Managing secrets securely:** Solved by using GitHub Secrets and never storing sensitive data in the repo.
-- **Terraform state consistency:** Addressed with remote state in S3 and locking via DynamoDB.
-- **Environment drift:** Minimized by enforcing all changes through IaC and CI/CD pipelines.
-- **SSH key rotation:** Designed the system to allow easy key updates without downtime.
-- **Pipeline reliability:** Added clear error handling and logging in deployment scripts and workflows.
-
-## Security Architecture
-- **Network segmentation:** Each environment uses its own VPC and Security Groups, restricting access to only necessary ports and sources.
-- **Principle of least privilege:** IAM roles and policies are scoped to the minimum required for each component.
-- **Auditability:** All infrastructure changes are tracked via Git and Terraform state, enabling full traceability.
-- **No hardcoded credentials:** All secrets are injected at runtime via secure channels.
-- **Regular key rotation and review:** SSH keys and secrets are rotated and reviewed as part of the deployment process.
-
-## Code Review & Pull Request Workflow
-- All changes are introduced via Pull Requests (PRs) to ensure code quality and enable peer review.
-- PRs trigger CI pipelines for tests, linting, and Terraform plan previews before merging.
-- Reviewers check for security, maintainability, and adherence to best practices.
-- Only after successful review and passing all checks are changes merged to `develop` (staging) or `main` (production).
-
-## Documentation & Onboarding
-- The repository includes comprehensive documentation for setup, deployment, and troubleshooting.
-- All scripts, workflows, and infrastructure components are described with clear usage instructions.
-- New team members can onboard quickly thanks to the structured README, code comments, and example configurations.
-- Diagrams and architecture overviews help visualize the system and speed up understanding.
-
-## DevOps Automation in Daily Work
-- Routine tasks (deployment, infrastructure changes, secret rotation) are fully automated via CI/CD and IaC.
-- Manual interventions are minimized, reducing risk and freeing up time for innovation.
-- Automated notifications (e.g., via GitHub Actions) keep the team informed about deployments and failures.
-- The project is designed to be extended with further automation (e.g., auto-scaling, self-healing, scheduled backups).
-
-## Cost Management & Optimization
-- Infrastructure is provisioned on-demand and can be destroyed when not needed (e.g., ephemeral staging environments).
-- Resource types and sizes are chosen for cost-effectiveness (e.g., t3.micro for EC2 in non-production).
-- Terraform outputs and tagging enable easy tracking of resource usage and cost allocation.
-- Future plans include automated cost monitoring and alerts for budget thresholds.
-
-## Team Collaboration & Communication
-- The project structure and workflows are designed for team use, supporting multiple contributors and parallel workstreams.
-- Remote state and locking prevent conflicts and ensure safe collaboration on infrastructure.
-- Clear commit messages, PR templates, and code review guidelines foster effective communication.
-- The project can be easily integrated with team chat tools (Slack, Teams) for deployment notifications and incident response.
-
-
----
 ## Author
-zajaczek01 (limitl3ss01)
+
+This project was created as a learning exercise to demonstrate modern DevOps practices including:
+- Infrastructure as Code (Terraform)
+- Containerization (Docker)
+- CI/CD Automation (GitHub Actions)
+- Cloud Deployment (AWS)
+- Monitoring and Observability (Prometheus + Grafana)
+- Automated Testing and Deployment
+
+The project showcases a complete DevOps workflow from development to production with comprehensive monitoring and automation.
 
