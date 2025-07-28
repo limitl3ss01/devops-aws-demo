@@ -2,7 +2,7 @@ name: Deploy to Staging
 
 on:
   push:
-    branches: [ staging ]
+    branches: [ develop ]
 
 jobs:
   deploy-staging:
@@ -56,7 +56,6 @@ jobs:
           username: ${{ secrets.STAGING_USER }}
           key: ${{ secrets.STAGING_SSH_KEY }}
           script: |
-            export ENVIRONMENT=staging
             chmod +x ~/devops-aws-demo/scripts/deploy.sh
             chmod +x ~/devops-aws-demo/scripts/setup-monitoring.sh
             cd ~/devops-aws-demo/scripts

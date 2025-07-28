@@ -3,16 +3,7 @@
 CONTAINER_NAME=devops-aws-demo
 MONITORING_STACK_NAME=monitoring
 
-# Determine environment and Docker tag
-if [ "$ENVIRONMENT" = "staging" ]; then
-    DOCKER_TAG="staging"
-elif [ "$ENVIRONMENT" = "production" ]; then
-    DOCKER_TAG="production"
-else
-    DOCKER_TAG="latest"
-fi
-
-echo "🚀 Starting deployment for environment: $ENVIRONMENT (tag: $DOCKER_TAG)..."
+echo "🚀 Starting deployment..."
 
 # Stop and remove old container if exists
 if [ "$(sudo docker ps -aq -f name=$CONTAINER_NAME)" ]; then
@@ -22,12 +13,12 @@ if [ "$(sudo docker ps -aq -f name=$CONTAINER_NAME)" ]; then
 fi
 
 # Pull latest image
-echo "📦 Pulling latest image from Docker Hub (tag: $DOCKER_TAG)..."
-sudo docker pull zajaczek01/devops-aws-demo:$DOCKER_TAG
+echo "📦 Pulling latest image from Docker Hub..."
+sudo docker pull zajaczek01/devops-aws-demo:latest
 
 # Run new container
 echo "▶️ Starting new container..."
-sudo docker run -d --name $CONTAINER_NAME -p 5000:5000 zajaczek01/devops-aws-demo:$DOCKER_TAG
+sudo docker run -d --name $CONTAINER_NAME -p 5000:5000 zajaczek01/devops-aws-demo:latest
 
 # Wait for app to start
 echo "⏳ Waiting for application to start..."

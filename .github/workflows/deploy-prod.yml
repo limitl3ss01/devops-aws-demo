@@ -21,6 +21,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Run tests
+        run: |
+          cd app
+          python -m pytest test_main.py -v
+
       - name: Build Docker image
         run: |
           docker build -t zajaczek01/devops-aws-demo:latest -f docker/Dockerfile .
@@ -35,6 +40,15 @@ jobs:
         run: |
           docker push zajaczek01/devops-aws-demo:latest
 
+      - name: Sync code to production server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_PROD }}
+          username: ${{ secrets.EC2_USER_PROD }}
+          key: ${{ secrets.EC2_SSH_KEY_PROD }}
+          source: "."
+          target: "~/devops-aws-demo"
+
       - name: Deploy on EC2 Production via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -42,6 +56,25 @@ jobs:
           username: ${{ secrets.EC2_USER_PROD }}
           key: ${{ secrets.EC2_SSH_KEY_PROD }}
           script: |
+            chmod +x ~/devops-aws-demo/scripts/deploy.sh
+            chmod +x ~/devops-aws-demo/scripts/setup-monitoring.sh
             cd ~/devops-aws-demo/scripts
-            chmod +x deploy.sh
-            ./deploy.sh 
+            ./deploy.sh
+
+      - name: Verify production deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST_PROD }}
+          username: ${{ secrets.EC2_USER_PROD }}
+          key: ${{ secrets.EC2_SSH_KEY_PROD }}
+          script: |
+            sleep 30
+            if curl -f http://localhost:5000/health > /dev/null 2>&1; then
+              echo "✅ Production deployment verification successful!"
+              echo "🌐 Production App URL: http://${{ secrets.EC2_HOST_PROD }}:5000"
+              echo "📊 Production Metrics: http://${{ secrets.EC2_HOST_PROD }}:5000/metrics"
+              echo "📈 Production Grafana: http://${{ secrets.EC2_HOST_PROD }}:3000"
+            else
+              echo "❌ Production deployment verification failed!"
+              exit 1
+            fi 
